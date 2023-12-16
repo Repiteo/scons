@@ -1706,10 +1706,31 @@ class Base(SubstitutionEnvironment):
             return pp.pformat(cvars)
 
         elif fmt == 'json':
-            import json
+            from json import dumps
+            from pprint import saferepr
+
             def non_serializable(obj):
-                return str(type(obj).__qualname__)
-            return json.dumps(cvars, indent=4, default=non_serializable)
+                if isinstance(obj, (CLVar, BuilderDict)):
+                    return obj.data
+                elif isinstance(obj, SCons.Action.ListAction):
+                    return obj.list
+                elif isinstance(obj, SCons.Action.CommandAction):
+                    return obj.cmd_list
+                elif isinstance(obj, SCons.Action.FunctionAction):
+                    return obj.function_name()
+                elif isinstance(obj, SCons.Defaults.Variable_Method_Caller):
+                    return {obj.variable: obj.method}
+                elif isinstance(obj, SCons.Scanner.ScannerBase):
+                    return obj.name
+                elif isinstance(obj, SCons.Node.NodeList):
+                    return [o._get_str() for o in obj.data]
+                elif isinstance(obj, SCons.Node.FS.Base):
+                    return obj._get_str()
+                else:
+                    return saferepr(obj)
+
+            return dumps(cvars, indent=4, default=non_serializable)
+
         else:
             raise ValueError("Unsupported serialization format: %s." % fmt)
 
