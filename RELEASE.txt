@@ -65,6 +65,10 @@ DEVELOPMENT
 
 - List visible changes in the way SCons is developed
 
+- Added `prek.toml` to support pre-commit hooks.
+
+- Added prek job to `runtest.yml`, ensuring pre-commit hooks are enforced.
+
 Thanks to the following contributors listed below for their contributions to this release.
 ==========================================================================================
 .. code-block:: text
